@@ -21,6 +21,7 @@ public class TileManager implements TileManagerCallback, Sprite {
     private Tile[][] matrix = new Tile[4][4];
     private boolean moving = false;
     private ArrayList<Tile> movingTiles;
+    //Flag to determine when to spawn new tile
     private boolean toSpawn = false;
 
     public TileManager(Resources resources, int standardSize, int screenWidth, int screenHeight){
