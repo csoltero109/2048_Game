@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 
 import com.example.csolter3.a2048clone.TileManagerCallback;
 
+import java.util.Random;
+
 public class Tile implements Sprite {
 
     private int screenWidth, screenHeight, standardSize;
@@ -22,6 +24,10 @@ public class Tile implements Sprite {
         this.callback = callback;
         currentX = destX = screenWidth / 2 - 2 * standardSize + matrixY * standardSize;
         currentY = destY = screenHeight / 2 - 2 * standardSize + matrixX * standardSize;
+        int chance = new Random().nextInt(100);
+        if(chance >= 90){
+            count = 2;
+        }
     }
 
     public void move(int matrixX, int matrixY){
@@ -52,6 +58,7 @@ public class Tile implements Sprite {
                 count++;
                 increment = false;
             }
+            callback.finishedMoving(this);
         }
     }
 
