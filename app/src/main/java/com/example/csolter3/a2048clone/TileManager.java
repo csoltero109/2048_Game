@@ -21,14 +21,16 @@ public class TileManager implements TileManagerCallback, Sprite {
     private Tile[][] matrix = new Tile[4][4];
     private boolean moving = false;
     private ArrayList<Tile> movingTiles;
-    //Flag to determine when to spawn new tile
     private boolean toSpawn = false;
+    private boolean endGame = false;
+    private GameManagerCallback callback;
 
-    public TileManager(Resources resources, int standardSize, int screenWidth, int screenHeight){
+    public TileManager(Resources resources, int standardSize, int screenWidth, int screenHeight, GameManagerCallback callback){
         this.resources = resources;
         this.standardSize = standardSize;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
+        this.callback = callback;
         initBitmaps();
         initGame();
     }
@@ -59,7 +61,7 @@ public class TileManager implements TileManagerCallback, Sprite {
         }
     }
 
-    private void initGame(){
+    public void initGame(){
         matrix = new Tile[4][4];
         movingTiles = new ArrayList<>();
         for(int i = 0; i < 2; i++){
@@ -89,6 +91,9 @@ public class TileManager implements TileManagerCallback, Sprite {
                     matrix[i][j].draw(canvas);
                 }
             }
+        }
+        if(endGame){
+            callback.gameOver();
         }
     }
 
@@ -316,6 +321,32 @@ public class TileManager implements TileManagerCallback, Sprite {
         if(movingTiles.isEmpty()){
             moving = false;
             spawn();
+            checkEndGame();
+        }
+    }
+
+    private void checkEndGame(){
+        endGame = true;
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                if(matrix[i][j] == null){
+                    endGame = false;
+                    break;
+                }
+            }
+        }
+
+        if(endGame){
+            for(int i = 0; i < 4; i++){
+                for(int j = 0; j < 4; j++){
+                    if((i > 0 && matrix[i-1][j].getValue() == matrix[i][j].getValue()) ||
+                            (i < 3 && matrix[i+1][j].getValue() == matrix[i][j].getValue()) ||
+                            (j > 0 && matrix[i][j-1].getValue() == matrix[i][j].getValue()) ||
+                            (j < 3 && matrix[i][j+1].getValue() == matrix[i][j].getValue())){
+                        endGame = false;
+                    }
+                }
+            }
         }
     }
 
