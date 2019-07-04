@@ -11,16 +11,19 @@ import android.view.SurfaceView;
 
 import com.example.csolter3.a2048clone.sprites.EndGame;
 import com.example.csolter3.a2048clone.sprites.Grid;
+import com.example.csolter3.a2048clone.sprites.Score;
 
 public class GameManager extends SurfaceView implements SurfaceHolder.Callback, SwipeCallback, GameManagerCallback {
 
+
+    private static final String APP_NAME = "2048 Game";
     private MainThread thread;
     private Grid grid;
     private int scWidth, scHeight, standardSize;
     private TileManager tileManager;
     private boolean endGame = false;
     private EndGame endGameSprite;
-
+    private Score score;
     private SwipeListener swipe;
 
     public GameManager (Context context, AttributeSet attrs){
@@ -39,6 +42,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
 
         tileManager = new TileManager(getResources(), standardSize, scWidth, scHeight, this);
         endGameSprite = new EndGame(getResources(), scWidth, scHeight);
+        score = new Score(getResources(), scWidth, scHeight, standardSize, getContext().getSharedPreferences(APP_NAME,Context.MODE_PRIVATE));
     }
 
     public void initGame(){
@@ -84,6 +88,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         canvas.drawRGB(255,255,255);
         grid.draw(canvas);
         tileManager.draw(canvas);
+        score.draw(canvas);
         if(endGame){
             endGameSprite.draw(canvas);
         }
@@ -109,5 +114,10 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
     @Override
     public void gameOver(){
         endGame = true;
+    }
+
+    @Override
+    public void updateScore(int delta){
+        score.updateScore(delta);
     }
 }
