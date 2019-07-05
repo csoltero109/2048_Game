@@ -5,4 +5,6 @@
     <dimen name="score_label_width">100dp</dimen>
     <dimen name="score_label_height">15dp</dimen>
     <dimen name="score_text_size">15sp</dimen>
+    <dimen name="score_bonus_width">130sp</dimen>
+    <dimen name="score_bonus_height">20sp</dimen>
 </resources>

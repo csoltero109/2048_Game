@@ -13,13 +13,18 @@ import com.example.csolter3.a2048clone.R;
 public class Score implements Sprite{
 
     private static final String SCORE_PREF = "Score pref";
+    private Resources resources;
     private int screenWidth, screenHeight, standardSize;
     private Bitmap bmpScore, bmpTopScore;
+    private Bitmap bmpTopScoreBonus, bmp2048Bonus;
     private int score, topScore;
     private SharedPreferences prefs;
     private Paint paint;
+    private boolean topScoreBonus = false;
+    private boolean a2048Bonus = false;
 
     public Score(Resources resources, int screenWidth, int screenHeight, int standardSize, SharedPreferences prefs){
+        this.resources = resources;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.standardSize = standardSize;
@@ -50,6 +55,14 @@ public class Score implements Sprite{
 
         canvas.drawText(String.valueOf(score), screenWidth / 4 - width1 / 2, bmpScore.getHeight() * 6, paint);
         canvas.drawText(String.valueOf(topScore), 3 * screenWidth / 4 - width2 / 2, bmpScore.getHeight() * 6, paint);
+
+        if(topScoreBonus){
+            canvas.drawBitmap(bmpTopScoreBonus, screenWidth / 2 - 2 * standardSize, screenHeight / 2 - 2 * standardSize - 2 * bmpTopScoreBonus.getHeight(), null);
+        }
+
+        if(a2048Bonus){
+            canvas.drawBitmap(bmp2048Bonus, screenWidth / 2 - 2 * standardSize, screenHeight / 2 - 2 * standardSize - 4 * bmp2048Bonus.getHeight(), null);
+        }
     }
 
     @Override
@@ -67,6 +80,21 @@ public class Score implements Sprite{
         if(topScore < score){
             prefs.edit().putInt(SCORE_PREF, score).apply();
             topScore = score;
+
+            int width = (int) resources.getDimension(R.dimen.score_bonus_width);
+            int height = (int) resources.getDimension(R.dimen.score_bonus_height);
+            Bitmap tsb = BitmapFactory.decodeResource(resources, R.drawable.highscore);
+            bmpTopScoreBonus = Bitmap.createScaledBitmap(tsb, width, height, false);
+
+            topScoreBonus = true;
         }
+    }
+
+    public void reached2048(){
+        int width = (int) resources.getDimension(R.dimen.score_bonus_width);
+        int height = (int) resources.getDimension(R.dimen.score_bonus_height);
+        Bitmap bmp = BitmapFactory.decodeResource(resources, R.drawable.a2048);
+        bmp2048Bonus = Bitmap.createScaledBitmap(bmp, width, height, false);
+        a2048Bonus = true;
     }
 }
