@@ -2,6 +2,8 @@ package com.example.csolter3.a2048clone;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -25,6 +27,8 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
     private EndGame endGameSprite;
     private Score score;
     private SwipeListener swipe;
+    private Bitmap restartButton;
+    private int restartButtonX,restartButtonY, restartButtonSize;
 
     public GameManager (Context context, AttributeSet attrs){
         super(context,attrs);
@@ -43,11 +47,18 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         tileManager = new TileManager(getResources(), standardSize, scWidth, scHeight, this);
         endGameSprite = new EndGame(getResources(), scWidth, scHeight);
         score = new Score(getResources(), scWidth, scHeight, standardSize, getContext().getSharedPreferences(APP_NAME,Context.MODE_PRIVATE));
+
+        restartButtonSize = (int) getResources().getDimension(R.dimen.restart_button_size);
+        Bitmap bmpRestart = BitmapFactory.decodeResource(getResources(), R.drawable.restart);
+        restartButton = Bitmap.createScaledBitmap(bmpRestart, restartButtonSize, restartButtonSize, false);
+        restartButtonX = scWidth / 2 + 2 * standardSize - restartButtonSize;
+        restartButtonY = scHeight / 2 - 2 * standardSize - 3 * restartButtonSize / 2;
     }
 
     public void initGame(){
         endGame = false;
         tileManager.initGame();
+        score = new Score(getResources(), scWidth, scHeight, standardSize, getContext().getSharedPreferences(APP_NAME,Context.MODE_PRIVATE));
     }
 
     @Override
@@ -89,6 +100,7 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
         grid.draw(canvas);
         tileManager.draw(canvas);
         score.draw(canvas);
+        canvas.drawBitmap(restartButton, restartButtonX, restartButtonY, null);
         if(endGame){
             endGameSprite.draw(canvas);
         }
@@ -101,7 +113,15 @@ public class GameManager extends SurfaceView implements SurfaceHolder.Callback, 
                 initGame();
             }
         }else{
-            swipe.onTouchEvent(event);
+            float eventX = event.getAxisValue(MotionEvent.AXIS_X);
+            float eventY = event.getAxisValue(MotionEvent.AXIS_Y);
+            if(event.getAction() == MotionEvent.ACTION_DOWN &&
+                    eventX > restartButtonX && eventX < restartButtonX + restartButtonSize &&
+                    eventY > restartButtonY && eventY < restartButtonY + restartButtonSize){
+                initGame();
+            }else {
+                swipe.onTouchEvent(event);
+            }
         }
         return super.onTouchEvent(event);
     }
